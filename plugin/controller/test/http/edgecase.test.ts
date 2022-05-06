@@ -51,4 +51,29 @@ describe('test/edgecase.test.ts', () => {
         assert(res.text === 'hello, view');
       });
   });
+
+  it('should create multiple app without error', async () => {
+    await app.httpRequest()
+      .get('/Middleware/Method')
+      .expect(200)
+      .expect(res => {
+        assert(res.text === 'hello, view');
+      });
+
+    const app2 = mm.app({
+      cache: false,
+      baseDir: path.join(__dirname, '../fixtures/apps/controller-app'),
+      framework: require.resolve('egg'),
+    });
+    await app2.ready();
+    app2.mockCsrf();
+    await app2.httpRequest()
+      .get('/Middleware/Method')
+      .expect(200)
+      .expect(res => {
+        assert(res.text === 'hello, view');
+      });
+
+    await app2.close();
+  });
 });
