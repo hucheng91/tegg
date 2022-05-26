@@ -19,6 +19,8 @@ import { EggControllerLoader } from './lib/EggControllerLoader';
 // 2. load ${app_base_dir}app/controller file
 // 3. ControllerRegister register controller implement
 
+let id = 0;
+
 export default class ControllerAppBootHook {
   private readonly app: Application;
   private readonly loadUnitHook: AppLoadUnitControllerHook;
@@ -26,14 +28,21 @@ export default class ControllerAppBootHook {
   private readonly controllerRegisterFactory: ControllerRegisterFactory;
   private controllerLoadUnitHandler: ControllerLoadUnitHandler;
   private readonly controllerPrototypeHook: EggControllerPrototypeHook;
+  private readonly controllerMetadataManager: ControllerMetadataManager;
 
   constructor(app: Application) {
     this.app = app;
+    (app as any).id = id++;
+    this.controllerMetadataManager = new ControllerMetadataManager();
     this.controllerRegisterFactory = new ControllerRegisterFactory(this.app);
     this.app.rootProtoManager = new RootProtoManager();
     this.app.controllerRegisterFactory = this.controllerRegisterFactory;
     this.app.controllerMetaBuilderFactory = ControllerMetaBuilderFactory;
-    this.loadUnitHook = new AppLoadUnitControllerHook(this.controllerRegisterFactory, this.app.rootProtoManager);
+    this.loadUnitHook = new AppLoadUnitControllerHook(
+      this.controllerRegisterFactory,
+      this.app.rootProtoManager,
+      this.controllerMetadataManager,
+    );
     this.controllerPrototypeHook = new EggControllerPrototypeHook();
   }
 
@@ -87,7 +96,7 @@ export default class ControllerAppBootHook {
     // HTTP method should sort by priority
     // The HTTPControllerRegister will collect all the methods
     // and register methods after collect is done.
-    HTTPControllerRegister.instance?.doRegister(this.app.rootProtoManager);
+    HTTPControllerRegister.doRegister(this.app, this.app.rootProtoManager);
   }
 
   async beforeClose() {
@@ -96,10 +105,10 @@ export default class ControllerAppBootHook {
     }
     this.app.loadUnitLifecycleUtil.deleteLifecycle(this.loadUnitHook);
     this.app.eggPrototypeLifecycleUtil.deleteLifecycle(this.controllerPrototypeHook);
-    ControllerMetadataManager.instance.clear();
+    this.controllerMetadataManager.clear();
     if (this.controllerHook) {
       this.app.eggContextLifecycleUtil.deleteLifecycle(this.controllerHook);
     }
-    HTTPControllerRegister.clean();
+    HTTPControllerRegister.clean(this.app);
   }
 }

@@ -4,8 +4,6 @@ import { MapUtil } from '@eggjs/tegg-common-util';
 export class ControllerMetadataManager {
   private readonly controllers = new Map<ControllerTypeLike, ControllerMetadata[]>();
 
-  static instance = new ControllerMetadataManager();
-
   constructor() {
     this.controllers = new Map();
   }

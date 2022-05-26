@@ -7,10 +7,16 @@ import { RootProtoManager } from './RootProtoManager';
 export class AppLoadUnitControllerHook implements LifecycleHook<LoadUnitLifecycleContext, LoadUnit> {
   private readonly controllerRegisterFactory: ControllerRegisterFactory;
   private readonly rootProtoManager: RootProtoManager;
+  private readonly controllerMetadataManger: ControllerMetadataManager;
 
-  constructor(controllerRegisterFactory: ControllerRegisterFactory, rootProtoManager: RootProtoManager) {
+  constructor(
+    controllerRegisterFactory: ControllerRegisterFactory,
+    rootProtoManager: RootProtoManager,
+    controllerMetadataManger: ControllerMetadataManager,
+  ) {
     this.controllerRegisterFactory = controllerRegisterFactory;
     this.rootProtoManager = rootProtoManager;
+    this.controllerMetadataManger = controllerMetadataManger;
   }
 
   async postCreate(_: LoadUnitLifecycleContext, obj: LoadUnit): Promise<void> {
@@ -24,7 +30,7 @@ export class AppLoadUnitControllerHook implements LifecycleHook<LoadUnitLifecycl
       if (!register) {
         throw new Error(`not find controller implement for ${String(proto.name)} which type is ${metadata.type}`);
       }
-      ControllerMetadataManager.instance.addController(metadata);
+      this.controllerMetadataManger.addController(metadata);
       await register.register(this.rootProtoManager);
     }
   }

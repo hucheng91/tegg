@@ -15,7 +15,7 @@ import { EggContainerFactory } from '@eggjs/tegg-runtime';
 import { RootProtoManager } from '../../RootProtoManager';
 
 export class HTTPControllerRegister implements ControllerRegister {
-  static instance?: HTTPControllerRegister;
+  static instance: Map<Application, HTTPControllerRegister> = new Map();
 
   private readonly router: KoaRouter<any, Context>;
   private readonly eggContainerFactory: typeof EggContainerFactory;
@@ -23,11 +23,24 @@ export class HTTPControllerRegister implements ControllerRegister {
 
   static create(proto: EggPrototype, controllerMeta: ControllerMetadata, app: Application) {
     assert(controllerMeta.type === ControllerType.HTTP, 'controller meta type is not HTTP');
-    if (!HTTPControllerRegister.instance) {
-      HTTPControllerRegister.instance = new HTTPControllerRegister(app.router, app.eggContainerFactory);
+    if (!HTTPControllerRegister.instance.has(app)) {
+      HTTPControllerRegister.instance.set(app, new HTTPControllerRegister(app.router, app.eggContainerFactory));
     }
-    HTTPControllerRegister.instance.controllerProtos.push(proto);
-    return HTTPControllerRegister.instance;
+    const instance = HTTPControllerRegister.instance.get(app)!;
+    instance.controllerProtos.push(proto);
+    return instance;
+  }
+
+  static clean(app: Application) {
+    if (!this.instance.has(app)) return;
+
+    this.instance.get(app)!.controllerProtos = [];
+    this.instance.delete(app);
+  }
+
+  static doRegister(app: Application, rootProtoManager: RootProtoManager) {
+    if (!this.instance.has(app)) return;
+    this.instance.get(app)!.doRegister(rootProtoManager);
   }
 
   constructor(router: KoaRouter<any, Context>, eggContainerFactory: typeof EggContainerFactory) {
@@ -38,13 +51,6 @@ export class HTTPControllerRegister implements ControllerRegister {
   register(): Promise<void> {
     // do noting
     return Promise.resolve();
-  }
-
-  static clean() {
-    if (this.instance) {
-      this.instance.controllerProtos = [];
-    }
-    this.instance = undefined;
   }
 
   doRegister(rootProtoManager: RootProtoManager) {
