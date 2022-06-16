@@ -3,7 +3,7 @@ import { Injectable } from '@artus/core';
 import { ScopeEnum } from '@artus/injection';
 
 @Injectable({
-  scope: ScopeEnum.EXECUTION
+  scope: ScopeEnum.EXECUTION,
 })
 export default class OriginHttpRequest {
   constructor(req: IncomingMessage) {
