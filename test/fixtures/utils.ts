@@ -9,7 +9,11 @@ type CreateAppOptions = {
 
 export async function createApp(root, { debug, env }: CreateAppOptions) {
   const baseDir = path.join(appBaseDir, root);
-  const scanner = new Scanner({ needWriteFile: false, configDir: 'config' });
+  const scanner = new Scanner({
+    needWriteFile: false,
+    configDir: 'config',
+    extensions: [ '.ts' ],
+  });
   const manifest = await scanner.scan(baseDir);
 
   debug ??= false;
