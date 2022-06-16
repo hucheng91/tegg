@@ -1,1 +1,1 @@
-# Eggjs with typescripts
+# Eggjs with typescript

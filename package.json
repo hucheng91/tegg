@@ -1,7 +1,7 @@
 {
   "name": "tegg",
   "version": "0.0.0",
-  "description": "eggjs with typescripts",
+  "description": "eggjs with typescript",
   "main": "dispatch.ts",
   "scripts": {
     "lint:fix": "eslint . --ext .ts --fix",
@@ -22,5 +22,15 @@
   "bugs": {
     "url": "https://github.com/eggjs/tegg/issues"
   },
-  "homepage": "https://github.com/eggjs/tegg#readme"
+  "homepage": "https://github.com/eggjs/tegg#readme",
+  "dependencies": {
+    "@artus/core": "^1.0.0-beta.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^28.1.1",
+    "@types/node": "^18.0.0",
+    "eslint": "^8.17.0",
+    "eslint-config-egg": "^12.0.0",
+    "typescript": "^4.7.3"
+  }
 }
