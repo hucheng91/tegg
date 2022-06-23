@@ -1,2 +1,3 @@
 export * from './constant';
-export { HTTPMethodEnum, HttpController, HttpMethod } from './decorator';
+export * from './type';
+export * from './decorator';

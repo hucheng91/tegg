@@ -3,7 +3,7 @@ import detect from 'detect-port';
 import { ArtusApplication, LifecycleHookUnit, ApplicationLifecycle, LifecycleHook, WithApplication } from '@artus/core';
 import { ScopeEnum } from '@artus/injection';
 import { ORIGIN_SERVER, ORIGIN_REQ, ORIGIN_RES, TEGG_CONTEXT } from './constant';
-import { registerController } from './decorator';
+import { registerController } from './utils';
 import HttpTrigger from './trigger';
 
 @LifecycleHookUnit()
