@@ -23,4 +23,22 @@ describe('test/framework.test.ts', function() {
       assert(response.data === 'new tegg home.');
     });
   });
+
+  describe('access with injected request', () => {
+    let app: ArtusApplication;
+    afterEach(function() {
+      app.close();
+    });
+
+    it('should start success with tegg', async function() {
+      app = await createApp('access-request', { debug: false });
+      const server = app.getContainer().get(ORIGIN_SERVER) as Server;
+      assert(server.listening);
+
+      const path = '/whoiam';
+      const response = await axios.get(`http://127.0.0.1:${app.config.port}${path}`);
+      assert(response.status === 200);
+      assert(response.data === path);
+    });
+  });
 });
