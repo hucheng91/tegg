@@ -1,1 +1,1 @@
-export * from './plugin/http-trigger/index';
+export * from './plugin/http-trigger/src/index';
