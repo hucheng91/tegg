@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { Injectable, ScopeEnum } from '@artus/injection';
 import { ControllerParams, HttpParams } from './type';
 import { HOOK_HTTP_META_PREFIX } from './constant';
-import { controllerMap } from './utils';
+import { controllerMap } from './utils/index';
 
 export function HttpController(options?: ControllerParams): ClassDecorator {
   const prefix = options?.path ?? '';

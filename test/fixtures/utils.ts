@@ -7,7 +7,7 @@ type CreateAppOptions = {
   env?: string;
 };
 
-export async function createApp(root, { debug, env }: CreateAppOptions) {
+export async function createApp(root: string, { debug, env }: CreateAppOptions) {
   const baseDir = path.join(appBaseDir, root);
   const scanner = new Scanner({
     needWriteFile: false,
