@@ -43,6 +43,10 @@ describe('test/framework.test.ts', function() {
       const response2 = await axios.get(`http://127.0.0.1:${app.config.port}/params/9527`);
       assert(response2.status === 200);
       assert(Number(response2.data) === 9527);
+
+      const response3 = await axios.get(`http://127.0.0.1:${app.config.port}/query?id=9527`);
+      assert(response3.status === 200);
+      assert(Number(response3.data) === 9527);
     });
   });
 });
