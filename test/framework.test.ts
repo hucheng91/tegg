@@ -39,6 +39,10 @@ describe('test/framework.test.ts', function() {
       const response = await axios.get(`http://127.0.0.1:${app.config.port}${path}`);
       assert(response.status === 200);
       assert(response.data === path);
+
+      const response2 = await axios.get(`http://127.0.0.1:${app.config.port}/params/9527`);
+      assert(response2.status === 200);
+      assert(Number(response2.data) === 9527);
     });
   });
 });

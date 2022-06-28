@@ -14,6 +14,7 @@ export const KOA_CONTEXT = 'TEGG::KOA_CONTEXT';
 
 export const TEGG_CONTEXT = 'TEGG::CONTEXT';
 export const TEGG_OUTPUT = 'TEGG::OUTPUT';
+export const TEGG_ROUTER = 'TEGG::ROUTER';
 
 export const REQUEST = 'TEGG::REQUEST';
 export const RESPONSE = 'TEGG::RESPONSE';
