@@ -30,27 +30,56 @@ describe('test/framework.test.ts', function() {
       app.close();
     });
 
-    it('should start success with tegg', async function() {
-      app = await createApp('access-request', { debug: false });
+    it('should get response with tegg succeed', async function() {
+      app = await createApp('request', { debug: false });
       const server = app.getContainer().get<Server>(ORIGIN_SERVER);
       assert(server.listening);
 
       const path = '/whoiam';
-      const response = await axios.get(`http://127.0.0.1:${app.config.port}${path}`);
-      assert(response.status === 200);
-      assert(response.data === path);
-
-      const response1 = await axios.get(`http://127.0.0.1:${app.config.port}/params/9527`);
+      const response1 = await axios.get(`http://127.0.0.1:${app.config.port}${path}`);
       assert(response1.status === 200);
-      assert(Number(response1.data) === 9527);
+      assert(response1.data === path);
 
-      const response2 = await axios.get(`http://127.0.0.1:${app.config.port}/query?id=9528`);
+      const response2 = await axios.get(`http://127.0.0.1:${app.config.port}/params/9527`);
       assert(response2.status === 200);
-      assert(Number(response2.data) === 9528);
+      assert(Number(response2.data) === 9527);
 
-      const response3 = await axios.post(`http://127.0.0.1:${app.config.port}/body`, { id: 9529 });
+      const response3 = await axios.get(`http://127.0.0.1:${app.config.port}/query?id=9528`);
       assert(response3.status === 200);
-      assert(Number(response3.data) === 9529);
+      assert(Number(response3.data) === 9528);
+
+      const response4 = await axios.post(`http://127.0.0.1:${app.config.port}/body`, { id: 9529 });
+      assert(response4.status === 200);
+      assert(Number(response4.data) === 9529);
+    });
+  });
+
+  describe('child router', () => {
+    let app: ArtusApplication;
+    afterEach(function() {
+      app.close();
+    });
+
+    it('should get response with tegg succeed', async function() {
+      app = await createApp('router', { debug: false });
+      const server = app.getContainer().get<Server>(ORIGIN_SERVER);
+      assert(server.listening);
+
+      const response1 = await axios.get(`http://127.0.0.1:${app.config.port}/router1/foo`);
+      assert(response1.status === 200);
+      assert(response1.data === 'router1 foo');
+
+      const response2 = await axios.get(`http://127.0.0.1:${app.config.port}/router1/bar`);
+      assert(response2.status === 200);
+      assert(response2.data === 'router1 bar');
+
+      const response3 = await axios.get(`http://127.0.0.1:${app.config.port}/router2/foo`);
+      assert(response3.status === 200);
+      assert(response3.data === 'router2 foo');
+
+      const response4 = await axios.get(`http://127.0.0.1:${app.config.port}/router2/bar`);
+      assert(response4.status === 200);
+      assert(response4.data === 'router2 bar');
     });
   });
 });

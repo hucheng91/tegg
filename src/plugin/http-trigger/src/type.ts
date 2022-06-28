@@ -3,7 +3,7 @@ import { Constructable } from '@artus/injection';
 import { HTTPMethodEnum } from './constant';
 
 export type ControllerParams = {
-  path?: string
+  prefix?: string
 };
 
 export type HttpParams = {

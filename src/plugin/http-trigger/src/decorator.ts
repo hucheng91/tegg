@@ -6,7 +6,7 @@ import { HOOK_HTTP_META_PREFIX } from './constant';
 import { controllerMap } from './utils/index';
 
 export function HttpController(options?: ControllerParams): ClassDecorator {
-  const prefix = options?.path ?? '';
+  const prefix = options?.prefix ?? '';
   return (target: any) => {
     controllerMap.add({ prefix, clazz: target });
     Injectable({ scope: ScopeEnum.EXECUTION })(target);

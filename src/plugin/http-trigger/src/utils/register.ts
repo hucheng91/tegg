@@ -22,6 +22,7 @@ export function registerController(trigger: HttpTrigger, container: Container) {
     const router = container.get<KoaRouter>(KOA_ROUTER);
 
     const fnMetaKeys = Reflect.getMetadataKeys(clazz);
+    const childRouter = router.instance();
 
     for (let key of fnMetaKeys) {
       if (typeof key !== 'string') {
@@ -43,10 +44,14 @@ export function registerController(trigger: HttpTrigger, container: Container) {
         await trigger.startPipeline(teggCtx);
       };
       if (prefix) {
-
+        childRouter[method.toLowerCase()](path, koaMiddleware);
       } else {
         router[method.toLowerCase()](path, koaMiddleware);
       }
+    }
+
+    if (prefix) {
+      router.use(prefix, childRouter.routes());
     }
   }
 
