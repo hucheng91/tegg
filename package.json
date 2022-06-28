@@ -26,7 +26,8 @@
   "dependencies": {
     "@artus/core": "^1.0.0-beta.0",
     "@koa/router": "^10.1.1",
-    "koa": "^2.13.4"
+    "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0"
   },
   "devDependencies": {
     "@types/jest": "^28.1.1",

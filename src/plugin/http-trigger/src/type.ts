@@ -23,3 +23,7 @@ export type Params = {
 export type Query = {
   [key: string]: any
 };
+
+export type Body = {
+  [key: string]: any
+};

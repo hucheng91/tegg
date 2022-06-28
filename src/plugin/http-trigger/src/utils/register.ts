@@ -5,7 +5,7 @@ import HttpTrigger from '../trigger';
 import { DefaultContext } from '../thridparty/index';
 import {
   KOA_ROUTER, HOOK_HTTP_META_PREFIX, TEGG_OUTPUT, TEGG_ROUTER,
-  KOA_CONTEXT, PARAMS, QUERY,
+  KOA_CONTEXT, PARAMS, QUERY, BODY,
 } from '../constant';
 import KoaRouter from '../thridparty/router';
 
@@ -66,5 +66,5 @@ export function registerParams(container: Container) {
 
   container.set({ id: QUERY, value: koaCtx.query });
   container.set({ id: PARAMS, value: koaCtx.params });
-  // container.set({ id: BODY, value: koaCtx.request.body });
+  container.set({ id: BODY, value: koaCtx.request.body });
 }

@@ -1,6 +1,6 @@
 import http, { Server } from 'http';
 import detect from 'detect-port';
-import { DefaultContext, KoaApplication } from './thridparty/index';
+import { DefaultContext, KoaApplication, registerKoaMiddleware } from './thridparty/index';
 import {
   ArtusApplication, LifecycleHookUnit,
   ApplicationLifecycle, LifecycleHook, WithApplication, WithContainer,
@@ -51,10 +51,12 @@ export default class BootTrap implements ApplicationLifecycle {
 
       await next();
     });
+
+    registerKoaMiddleware(this.koaApp);
   }
 
   @LifecycleHook('willReady')
-  async register() {
+  async registerRouter() {
     registerController(this.app.trigger as HttpTrigger, this.container);
     this.koaApp.use(this.koaRouter.routes());
     this.koaApp.use(this.koaRouter.allowedMethods());

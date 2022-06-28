@@ -1,7 +1,7 @@
 import { Inject } from '@artus/core';
 import {
   HttpController, HttpMethod, HTTPMethodEnum,
-  Params, PARAMS, Query, QUERY,
+  Params, PARAMS, Query, QUERY, Body, BODY,
 } from '../../../../../src';
 
 @HttpController()
@@ -10,6 +10,8 @@ export default class PathController {
   private params: Params;
   @Inject(QUERY)
   private query: Query;
+  @Inject(BODY)
+  private body: Body;
 
   @HttpMethod({
     method: HTTPMethodEnum.GET,
@@ -25,5 +27,13 @@ export default class PathController {
   })
   async getQuery() {
     return this.query.id;
+  }
+
+  @HttpMethod({
+    method: HTTPMethodEnum.POST,
+    path: '/body',
+  })
+  async getBody() {
+    return this.body.id;
   }
 }
