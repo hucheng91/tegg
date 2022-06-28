@@ -1,7 +1,9 @@
-import { Container } from '@artus/injection';
+import { DefaultContext } from 'koa';
+import { Container, ScopeEnum } from '@artus/injection';
+import { Context, Next } from '@artus/pipeline';
 import { ControllerMeta } from '../type';
 import HttpTrigger from '../trigger';
-import { KOA_ROUTER, HOOK_HTTP_META_PREFIX } from '../constant';
+import { KOA_ROUTER, HOOK_HTTP_META_PREFIX, TEGG_OUTPUT } from '../constant';
 import KoaRouter from '../thridparty/router';
 
 export const controllerMap = new Set<ControllerMeta>();
@@ -9,7 +11,6 @@ export const controllerMap = new Set<ControllerMeta>();
 export function registerController(trigger: HttpTrigger, container: Container) {
   for (const controller of controllerMap) {
     const { prefix, clazz } = controller;
-    const instance: any = container.get(clazz);
     const router: KoaRouter = container.get(KOA_ROUTER);
 
     const fnMetaKeys = Reflect.getMetadataKeys(clazz);
@@ -22,36 +23,27 @@ export function registerController(trigger: HttpTrigger, container: Container) {
         continue;
       }
 
-      // register controller
+      // register tegg controller
       const { method, path } = Reflect.getMetadata(key, clazz);
       key = key.replace(HOOK_HTTP_META_PREFIX, '');
-      const fn = async function (ctx) {
+      const teggMiddleware = async function(ctx: Context, next: Next) {
+        const instance: any = ctx.container.get(clazz);
         const output = await instance[key]();
-        console.log(12333, trigger, output);
-        ctx.body = output;
+        ctx.container.set({ id: TEGG_OUTPUT, value: output, scope: ScopeEnum.EXECUTION });
+        await next();
+      };
+      trigger.use(teggMiddleware);
+
+      // register koa controller
+      const koaMiddleware = async function(koaCtx: DefaultContext) {
+        const { teggCtx } = koaCtx;
+        await trigger.startPipeline(teggCtx);
       };
       if (prefix) {
 
       } else {
-        router[method.toLowerCase()](path, fn);
+        router[method.toLowerCase()](path, koaMiddleware);
       }
-
-      console.log(12333, router)
-
-      // match router
-      // trigger.use(async (ctx: Context, next: Next) => {
-      //   const req = ctx.container.get(ORIGIN_REQ) as IncomingMessage;
-      //   if (req.url === `${prefix}${path}` && req.method === method) {
-      //     const instance: any = ctx.container.get(clazz);
-      //     const target = instance[key];
-      //     const params: any = Reflect.getMetadata(CONSTRUCTOR_PARAMS, target) ?? [];
-      //     const paramsMap = {
-      //       [CONSTRUCTOR_PARAMS_CONTEXT]: ctx,
-      //     };
-      //     ctx.output.data.content = await target.call(instance, ...params.map(param => paramsMap[param]));
-      //   }
-      //   await next();
-      // });
     }
   }
 }

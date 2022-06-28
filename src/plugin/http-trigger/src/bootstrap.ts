@@ -3,11 +3,11 @@ import detect from 'detect-port';
 import { DefaultContext } from 'koa';
 import {
   ArtusApplication, LifecycleHookUnit,
-  ApplicationLifecycle, LifecycleHook, WithApplication, WithContainer
+  ApplicationLifecycle, LifecycleHook, WithApplication, WithContainer,
 } from '@artus/core';
 import { Container, ScopeEnum } from '@artus/injection';
-import { ORIGIN_SERVER, KOA_APPLICATION, KOA_ROUTER, KOA_CONTEXT, TEGG_CONTEXT } from './constant';
-import { registerController } from './utils/index';
+import { ORIGIN_SERVER, KOA_APPLICATION, KOA_ROUTER, KOA_CONTEXT, TEGG_CONTEXT, REQUEST, RESPONSE } from './constant';
+import { registerController, controllerMap } from './utils/index';
 import HttpTrigger from './trigger';
 import KoaApplication from './thridparty/koa';
 import KoaRouter from './thridparty/router';
@@ -37,15 +37,17 @@ export default class BootTrap implements ApplicationLifecycle {
     app.getContainer().set({ id: KOA_APPLICATION, value: this.koaApp });
     app.getContainer().set({ id: KOA_ROUTER, value: this.koaRouter });
 
-    this.koaApp.use(async (koaCtx: DefaultContext) => {
+    this.koaApp.use(async (koaCtx: DefaultContext, next) => {
       const ctx = await this.app.trigger.initContext();
       koaCtx.teggCtx = ctx;
 
       // set execution container
       ctx.container.set({ id: KOA_CONTEXT, value: koaCtx, scope: ScopeEnum.EXECUTION });
       ctx.container.set({ id: TEGG_CONTEXT, value: ctx, scope: ScopeEnum.EXECUTION });
+      ctx.container.set({ id: REQUEST, value: koaCtx.request, scope: ScopeEnum.EXECUTION });
+      ctx.container.set({ id: RESPONSE, value: koaCtx.response, scope: ScopeEnum.EXECUTION });
 
-      // await this.app.trigger.startPipeline(ctx);
+      await next();
     });
   }
 
@@ -80,5 +82,6 @@ export default class BootTrap implements ApplicationLifecycle {
   @LifecycleHook()
   async beforeClose() {
     this.server?.close();
+    controllerMap.clear();
   }
 }

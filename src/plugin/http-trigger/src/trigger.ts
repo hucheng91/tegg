@@ -1,6 +1,6 @@
-import { Stream } from 'stream';
 import { Context, Next } from '@artus/pipeline';
 import { Trigger, DefineTrigger } from '@artus/core';
+import { KOA_CONTEXT, TEGG_OUTPUT } from './constant';
 
 @DefineTrigger()
 export default class HttpTrigger extends Trigger {
@@ -14,24 +14,8 @@ export default class HttpTrigger extends Trigger {
   }
 
   async respond(ctx: Context) {
-    const { res } = ctx.input.params;
-    const { data } = ctx.output;
-
-    res.status = data.status || 200;
-    const { content } = data;
-
-    if (Buffer.isBuffer(content) || typeof content === 'string') {
-      return res.end(content);
-    }
-
-    if (content instanceof Stream) {
-      return content.pipe(res);
-    }
-
-    if (!content) {
-      res.end('404');
-    } else {
-      res.end(JSON.stringify(content));
-    }
+    const response = ctx.container.get(TEGG_OUTPUT);
+    const koaCtx: any = ctx.container.get(KOA_CONTEXT);
+    koaCtx.body = response;
   }
 }
