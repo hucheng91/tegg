@@ -18,4 +18,6 @@ export const TEGG_ROUTER = 'TEGG::ROUTER';
 
 export const REQUEST = 'TEGG::REQUEST';
 export const RESPONSE = 'TEGG::RESPONSE';
-
+export const PARAMS = 'TEGG::PARAMS';
+export const QUERY = 'TEGG::QUERY';
+export const BODY = 'TEGG::BODY';

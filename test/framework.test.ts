@@ -15,7 +15,7 @@ describe('test/framework.test.ts', function() {
 
     it('should start success with tegg', async function() {
       app = await createApp('simple', { debug: false });
-      const server = app.getContainer().get(ORIGIN_SERVER) as Server;
+      const server = app.getContainer().get<Server>(ORIGIN_SERVER);
       assert(server.listening);
 
       const response = await axios.get(`http://127.0.0.1:${app.config.port}/home`);
@@ -32,7 +32,7 @@ describe('test/framework.test.ts', function() {
 
     it('should start success with tegg', async function() {
       app = await createApp('access-request', { debug: false });
-      const server = app.getContainer().get(ORIGIN_SERVER) as Server;
+      const server = app.getContainer().get<Server>(ORIGIN_SERVER);
       assert(server.listening);
 
       const path = '/whoiam';

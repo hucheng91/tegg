@@ -1,9 +1,12 @@
-import { DefaultContext } from 'koa';
-import { Container, ScopeEnum, Constructable } from '@artus/injection';
+import { Container, Constructable } from '@artus/injection';
 import { Context, Next } from '@artus/pipeline';
 import { ControllerMeta } from '../type';
 import HttpTrigger from '../trigger';
-import { KOA_ROUTER, HOOK_HTTP_META_PREFIX, TEGG_OUTPUT, TEGG_ROUTER } from '../constant';
+import { DefaultContext } from '../thridparty/index';
+import {
+  KOA_ROUTER, HOOK_HTTP_META_PREFIX, TEGG_OUTPUT, TEGG_ROUTER,
+  KOA_CONTEXT, PARAMS, QUERY,
+} from '../constant';
 import KoaRouter from '../thridparty/router';
 
 type TeggRouter = {
@@ -16,7 +19,7 @@ export const controllerMap = new Set<ControllerMeta>();
 export function registerController(trigger: HttpTrigger, container: Container) {
   for (const controller of controllerMap) {
     const { prefix, clazz } = controller;
-    const router: KoaRouter = container.get(KOA_ROUTER);
+    const router = container.get<KoaRouter>(KOA_ROUTER);
 
     const fnMetaKeys = Reflect.getMetadataKeys(clazz);
 
@@ -36,7 +39,7 @@ export function registerController(trigger: HttpTrigger, container: Container) {
       const koaMiddleware = async function(koaCtx: DefaultContext) {
         const { teggCtx } = koaCtx;
         const router: TeggRouter = { attr: key, clazz };
-        teggCtx.container.set({ id: TEGG_ROUTER, value: router, scope: ScopeEnum.EXECUTION });
+        teggCtx.container.set({ id: TEGG_ROUTER, value: router });
         await trigger.startPipeline(teggCtx);
       };
       if (prefix) {
@@ -48,11 +51,20 @@ export function registerController(trigger: HttpTrigger, container: Container) {
   }
 
   const teggMiddleware = async function(ctx: Context, next: Next) {
-    const { attr, clazz } = ctx.container.get(TEGG_ROUTER) as TeggRouter;
-    const instance: any = ctx.container.get(clazz);
+    registerParams(ctx.container);
+    const { attr, clazz } = ctx.container.get<TeggRouter>(TEGG_ROUTER);
+    const instance = ctx.container.get<Constructable>(clazz);
     const output = await instance[attr]();
-    ctx.container.set({ id: TEGG_OUTPUT, value: output, scope: ScopeEnum.EXECUTION });
+    ctx.container.set({ id: TEGG_OUTPUT, value: output });
     await next();
   };
   trigger.use(teggMiddleware);
+}
+
+export function registerParams(container: Container) {
+  const koaCtx = container.get<DefaultContext>(KOA_CONTEXT);
+
+  container.set({ id: QUERY, value: koaCtx.query });
+  container.set({ id: PARAMS, value: koaCtx.params });
+  // container.set({ id: BODY, value: koaCtx.request.body });
 }

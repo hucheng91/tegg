@@ -1,18 +1,18 @@
 import { Inject } from '@artus/core';
 import {
-  HttpController, HttpMethod, HTTPMethodEnum, Request, REQUEST,
+  HttpController, HttpMethod, HTTPMethodEnum, PARAMS,
 } from '../../../../../src';
 
 @HttpController()
 export default class PathController {
-  @Inject(REQUEST)
-  private req: Request;
+  @Inject(PARAMS)
+  private params;
 
   @HttpMethod({
     method: HTTPMethodEnum.GET,
-    path: '/whoiam',
+    path: '/params/:id',
   })
-  async whoiam() {
-    return this.req.path;
+  async getpPrams() {
+    return this.params.id;
   }
 }

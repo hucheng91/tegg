@@ -1,6 +1,7 @@
 import { Context, Next } from '@artus/pipeline';
 import { Trigger, DefineTrigger } from '@artus/core';
 import { KOA_CONTEXT, TEGG_OUTPUT } from './constant';
+import { DefaultContext } from './thridparty/index';
 
 @DefineTrigger()
 export default class HttpTrigger extends Trigger {
@@ -15,7 +16,7 @@ export default class HttpTrigger extends Trigger {
 
   async respond(ctx: Context) {
     const response = ctx.container.get(TEGG_OUTPUT);
-    const koaCtx: any = ctx.container.get(KOA_CONTEXT);
+    const koaCtx = ctx.container.get<DefaultContext>(KOA_CONTEXT);
     koaCtx.body = response;
   }
 }
