@@ -1,39 +1,43 @@
-import { Inject } from '@artus/core';
 import {
   HttpController, HttpMethod, HTTPMethodEnum,
-  Params, PARAMS, Query, QUERY, Body, BODY,
+  WithParams, WithQuery, WithBody,
 } from '../../../../../src';
+
+type Args = {
+  id: string;
+};
 
 @HttpController()
 export default class PathController {
-  @Inject(PARAMS)
-  private params: Params;
-  @Inject(QUERY)
-  private query: Query;
-  @Inject(BODY)
-  private body: Body;
-
   @HttpMethod({
     method: HTTPMethodEnum.GET,
     path: '/params/:id',
   })
-  async getParams() {
-    return this.params.id;
+  async getParams(@WithParams() params:Args) {
+    return params.id;
   }
 
   @HttpMethod({
     method: HTTPMethodEnum.GET,
     path: '/query',
   })
-  async getQuery() {
-    return this.query.id;
+  async getQuery(@WithQuery() query:Args) {
+    return query.id;
   }
 
   @HttpMethod({
     method: HTTPMethodEnum.POST,
     path: '/body',
   })
-  async getBody() {
-    return this.body.id;
+  async getBody(@WithBody() body: Args) {
+    return body.id;
+  }
+
+  @HttpMethod({
+    method: HTTPMethodEnum.POST,
+    path: '/all/:id',
+  })
+  async getAll(@WithParams() params: Args, @WithQuery() query: Args, @WithBody() body: Args) {
+    return `${params.id}-${query.id}-${body.id}`;
   }
 }

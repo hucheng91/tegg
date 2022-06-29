@@ -15,15 +15,3 @@ export type ControllerMeta = {
   prefix: string,
   clazz: Constructable
 };
-
-export type Params = {
-  [key: string]: any
-};
-
-export type Query = {
-  [key: string]: any
-};
-
-export type Body = {
-  [key: string]: any
-};

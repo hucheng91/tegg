@@ -51,6 +51,10 @@ describe('test/framework.test.ts', function() {
       const response4 = await axios.post(`http://127.0.0.1:${app.config.port}/body`, { id: 9529 });
       assert(response4.status === 200);
       assert(Number(response4.data) === 9529);
+
+      const response5 = await axios.post(`http://127.0.0.1:${app.config.port}/all/1?id=2`, { id: 3 });
+      assert(response5.status === 200);
+      assert(response5.data === '1-2-3');
     });
   });
 

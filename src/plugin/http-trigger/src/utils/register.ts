@@ -5,7 +5,7 @@ import HttpTrigger from '../trigger';
 import { DefaultContext } from '../thridparty/index';
 import {
   KOA_ROUTER, HOOK_HTTP_META_PREFIX, TEGG_OUTPUT, TEGG_ROUTER,
-  KOA_CONTEXT, PARAMS, QUERY, BODY,
+  KOA_CONTEXT, PARAMS, QUERY, BODY, HOOK_CONTROLLER_PARAMS_PREFIX,
 } from '../constant';
 import KoaRouter from '../thridparty/router';
 
@@ -59,7 +59,16 @@ export function registerController(trigger: HttpTrigger, container: Container) {
     registerParams(ctx.container);
     const { attr, clazz } = ctx.container.get<TeggRouter>(TEGG_ROUTER);
     const instance = ctx.container.get<Constructable>(clazz);
-    const output = await instance[attr]();
+
+    const koaCtx = ctx.container.get<DefaultContext>(KOA_CONTEXT);
+    const inject = {
+      [PARAMS]: koaCtx.params,
+      [QUERY]: koaCtx.query,
+      [BODY]: koaCtx.request.body,
+    };
+    const params = Reflect.getMetadata(`${HOOK_CONTROLLER_PARAMS_PREFIX}${attr}`, clazz) ?? [];
+    const args = params.map((key: string) => inject[key]);
+    const output = await instance[attr](...args);
     ctx.container.set({ id: TEGG_OUTPUT, value: output });
     await next();
   };
