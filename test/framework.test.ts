@@ -9,12 +9,16 @@ import axios from 'axios';
 describe('test/framework.test.ts', function() {
   describe('simple app', () => {
     let app: ArtusApplication;
-    afterEach(function() {
-      app.close();
+
+    beforeEach(async function() {
+      app = await createApp('simple', { debug: false });
+    });
+
+    afterEach(async function() {
+      await app.close();
     });
 
     it('should start success with tegg', async function() {
-      app = await createApp('simple', { debug: false });
       const server = app.getContainer().get<Server>(ORIGIN_SERVER);
       assert(server.listening);
 
@@ -26,12 +30,16 @@ describe('test/framework.test.ts', function() {
 
   describe('access with injected request', () => {
     let app: ArtusApplication;
-    afterEach(function() {
-      app.close();
+
+    beforeEach(async function() {
+      app = await createApp('request', { debug: false });
+    });
+
+    afterEach(async function() {
+      await app.close();
     });
 
     it('should get response with tegg succeed', async function() {
-      app = await createApp('request', { debug: false });
       const server = app.getContainer().get<Server>(ORIGIN_SERVER);
       assert(server.listening);
 
@@ -60,12 +68,16 @@ describe('test/framework.test.ts', function() {
 
   describe('child router', () => {
     let app: ArtusApplication;
-    afterEach(function() {
-      app.close();
+
+    beforeEach(async function() {
+      app = await createApp('router', { debug: false });
+    });
+
+    afterEach(async function() {
+      await app.close();
     });
 
     it('should get response with tegg succeed', async function() {
-      app = await createApp('router', { debug: false });
       const server = app.getContainer().get<Server>(ORIGIN_SERVER);
       assert(server.listening);
 

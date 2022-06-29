@@ -15,7 +15,7 @@ import HttpTrigger from './trigger';
 import KoaRouter from './thridparty/router';
 
 @LifecycleHookUnit()
-export default class BootTrap implements ApplicationLifecycle {
+export default class BootStrap implements ApplicationLifecycle {
   private server: Server;
   private app: ArtusApplication;
   private container: Container;
@@ -35,9 +35,8 @@ export default class BootTrap implements ApplicationLifecycle {
 
   @LifecycleHook('willReady')
   async initKoa() {
-    const app = this.app;
-    app.getContainer().set({ id: KOA_APPLICATION, value: this.koaApp });
-    app.getContainer().set({ id: KOA_ROUTER, value: this.koaRouter });
+    this.container.set({ id: KOA_APPLICATION, value: this.koaApp });
+    this.container.set({ id: KOA_ROUTER, value: this.koaRouter });
 
     this.koaApp.use(async (koaCtx: DefaultContext, next) => {
       const ctx = await this.app.trigger.initContext();
@@ -79,8 +78,7 @@ export default class BootTrap implements ApplicationLifecycle {
 
   @LifecycleHook('didReady')
   async registerHttpServer() {
-    const app = this.app;
-    app.getContainer().set({ id: ORIGIN_SERVER, value: this.server });
+    this.container.set({ id: ORIGIN_SERVER, value: this.server });
   }
 
   @LifecycleHook()

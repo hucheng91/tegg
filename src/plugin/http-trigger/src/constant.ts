@@ -1,7 +1,7 @@
 export const enum HTTPMethodEnum {
   GET = 'GET',
   POST = 'POST',
-  DELETE = ' DELETE',
+  DELETE = 'DELETE',
   PUT = 'PUT',
 }
 
