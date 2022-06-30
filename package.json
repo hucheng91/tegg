@@ -6,7 +6,7 @@
   "scripts": {
     "lint:fix": "eslint . --ext .ts --fix",
     "lint": "eslint . --ext .ts",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "cov": "npm run clean && nyc npm run test",
     "tsc": "npm run tsc"
   },

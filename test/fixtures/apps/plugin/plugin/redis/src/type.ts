@@ -1,3 +1,4 @@
-import Redis from 'ioredis';
+import Redis, { RedisOptions } from 'ioredis';
+import MultiClients from './multi';
 
-export { Redis };
+export { Redis, RedisOptions, MultiClients };

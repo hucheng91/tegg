@@ -3,7 +3,7 @@ import {
   ApplicationLifecycle, LifecycleHook, WithApplication, WithContainer,
 } from '@artus/core';
 import { Container } from '@artus/injection';
-import Redis, { RedisOptions } from 'ioredis';
+import { Redis, RedisOptions, MultiClients } from './type';
 
 @LifecycleHookUnit()
 export default class RedisInitialization implements ApplicationLifecycle {
@@ -21,24 +21,24 @@ export default class RedisInitialization implements ApplicationLifecycle {
     const client: RedisOptions = config.client;
     const clients: Record<string, RedisOptions> = config.clients;
 
+    if (client) {
+      this.container.set({ id: Redis, value: new Redis(client) });
+    }
+
     if (clients) {
+      const multiClients = new MultiClients();
       Object
         .entries(clients)
-        .reduce((pre, [ key, conf ]) => pre.set(key, new Redis(conf)), new Map<string, Redis>());
-    } else {
-      this.container.set({ id: Redis, value: new Redis(client) });
+        .forEach(([ key, options ]) => multiClients.set(key, new Redis(options)));
+      this.container.set({ id: MultiClients, value: multiClients });
     }
   }
 
   @LifecycleHook()
   async beforeClose() {
-    const config = this.app.config.redis;
-    const clients: Record<string, RedisOptions> = config.clients;
-
-    if (clients) {
-      // (redis as RedisClients).forEach((client) => client.disconnect());
-    } else {
+    try {
       this.container.get(Redis).disconnect();
-    }
+      this.container.get(MultiClients).clean();
+    } catch (e) { e; }
   }
 }
