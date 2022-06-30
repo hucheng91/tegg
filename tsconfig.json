@@ -22,6 +22,7 @@
     "inlineSourceMap": true,
     "declaration": true,
     "resolveJsonModule": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
   }
 }

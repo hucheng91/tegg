@@ -4,7 +4,7 @@ import { Redis } from '../plugin/redis/src';
 
 @HttpController()
 export default class RedisController {
-  @Inject(Redis)
+  @Inject()
   private redis: Redis;
 
   @HttpMethod({
