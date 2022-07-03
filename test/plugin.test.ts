@@ -13,7 +13,7 @@ describe('test/plugin.test.ts', function() {
     const server: RedisServer[] = [];
 
     beforeAll(async function() {
-      app = await createApp('plugin', { debug: false });
+      app = await createApp('simple-plugin', { debug: false });
       server.push(await startRedisServer(6666));
       server.push(await startRedisServer(6667));
       server.push(await startRedisServer(6668));

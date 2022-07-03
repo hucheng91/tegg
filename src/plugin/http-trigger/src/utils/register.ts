@@ -1,11 +1,12 @@
 import { Container, Constructable } from '@artus/injection';
 import { Context, Next } from '@artus/pipeline';
-import { ControllerMeta } from '../type';
+import { ControllerMeta, MiddlewareMeta } from '../type';
 import HttpTrigger from '../trigger';
 import { DefaultContext } from '../thridparty/index';
 import {
   KOA_ROUTER, HOOK_HTTP_META_PREFIX, TEGG_OUTPUT, TEGG_ROUTER,
   KOA_CONTEXT, PARAMS, QUERY, BODY, HOOK_CONTROLLER_PARAMS_PREFIX,
+  HOOK_MIDDLEWARE_META_PREFIX,
 } from '../constant';
 import KoaRouter from '../thridparty/router';
 
@@ -15,6 +16,8 @@ type TeggRouter = {
 };
 
 export const controllerMap = new Set<ControllerMeta>();
+
+export const middlewareMap = new Set<MiddlewareMeta>();
 
 export function registerController(trigger: HttpTrigger, container: Container) {
   for (const controller of controllerMap) {
@@ -75,6 +78,38 @@ export function registerController(trigger: HttpTrigger, container: Container) {
   trigger.use(teggMiddleware);
 }
 
+export function registerMiddleware(trigger: HttpTrigger, container: Container) {
+  for (const middleware of middlewareMap) {
+    middleware; trigger; container;
+
+    const { clazz } = middleware;
+
+    const fnMetaKeys = Reflect.getMetadataKeys(clazz);
+    for (let key of fnMetaKeys) {
+      if (typeof key !== 'string') {
+        continue;
+      }
+      if (!key.startsWith(HOOK_MIDDLEWARE_META_PREFIX)) {
+        continue;
+      }
+
+      const { path } = Reflect.getMetadata(key, clazz);
+      key = key.replace(HOOK_MIDDLEWARE_META_PREFIX, '');
+      if (path) {
+
+      } else {
+        trigger.use(async function(ctx: Context, next: Next) {
+          const instance = ctx.container.get<Constructable>(clazz);
+          const output = await instance[key](next);
+          if (output) {
+            ctx.container.set({ id: TEGG_OUTPUT, value: output });
+          }
+        });
+      }
+    }
+  }
+}
+
 export function registerParams(container: Container) {
   const koaCtx = container.get<DefaultContext>(KOA_CONTEXT);
 
@@ -82,3 +117,4 @@ export function registerParams(container: Container) {
   container.set({ id: PARAMS, value: koaCtx.params });
   container.set({ id: BODY, value: koaCtx.request.body });
 }
+

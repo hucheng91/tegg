@@ -11,7 +11,7 @@ describe('test/framework.test.ts', function() {
     let app: ArtusApplication;
 
     beforeEach(async function() {
-      app = await createApp('simple', { debug: false });
+      app = await createApp('simple-app', { debug: false });
     });
 
     afterEach(async function() {

@@ -10,7 +10,7 @@ import {
   ORIGIN_SERVER, KOA_APPLICATION, KOA_ROUTER, KOA_CONTEXT, TEGG_CONTEXT,
   REQUEST, RESPONSE,
 } from './constant';
-import { registerController, controllerMap } from './utils/index';
+import { registerMiddleware, registerController, controllerMap } from './utils/index';
 import HttpTrigger from './trigger';
 import KoaRouter from './thridparty/router';
 
@@ -55,7 +55,9 @@ export default class BootStrap implements ApplicationLifecycle {
   }
 
   @LifecycleHook('willReady')
-  async registerRouter() {
+  async registerArtus() {
+    registerMiddleware(this.app.trigger as HttpTrigger, this.container);
+
     registerController(this.app.trigger as HttpTrigger, this.container);
     this.koaApp.use(this.koaRouter.routes());
     this.koaApp.use(this.koaRouter.allowedMethods());

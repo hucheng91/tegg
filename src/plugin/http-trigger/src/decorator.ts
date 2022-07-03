@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 
 import { Injectable, ScopeEnum } from '@artus/injection';
-import { ControllerParams, HttpParams } from './type';
-import { HOOK_HTTP_META_PREFIX, HOOK_CONTROLLER_PARAMS_PREFIX, PARAMS, QUERY, BODY } from './constant';
-import { controllerMap } from './utils/index';
+import { ControllerParams, HttpParams, MiddlewareParams } from './type';
+import { HOOK_HTTP_META_PREFIX, HOOK_MIDDLEWARE_META_PREFIX, HOOK_CONTROLLER_PARAMS_PREFIX, PARAMS, QUERY, BODY } from './constant';
+import { controllerMap, middlewareMap } from './utils/index';
 
 export function HttpController(options?: ControllerParams): ClassDecorator {
   const prefix = options?.prefix ?? '';
@@ -19,6 +19,22 @@ export function HttpMethod(options: HttpParams): PropertyDecorator {
       throw new Error(`http hookName is not support symbol [${propertyKey.description}]`);
     }
     Reflect.defineMetadata(`${HOOK_HTTP_META_PREFIX}${propertyKey}`, options, target.constructor);
+  };
+}
+
+export function Middleware(): ClassDecorator {
+  return (target: any) => {
+    middlewareMap.add({ clazz: target });
+    Injectable({ scope: ScopeEnum.EXECUTION })(target);
+  };
+}
+
+export function MiddlewareMethod(options: MiddlewareParams = {}): PropertyDecorator {
+  return (target: any, propertyKey: string | symbol) => {
+    if (typeof propertyKey === 'symbol') {
+      throw new Error(`middleware hookName is not support symbol [${propertyKey.description}]`);
+    }
+    Reflect.defineMetadata(`${HOOK_MIDDLEWARE_META_PREFIX}${propertyKey}`, options, target.constructor);
   };
 }
 
