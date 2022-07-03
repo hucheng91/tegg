@@ -13,13 +13,13 @@ export const ORIGIN_SERVER = 'TEGG::ORIGIN_SERVER';
 export const KOA_APPLICATION = 'TEGG::ORIGIN_KOA_APPLICATION';
 export const KOA_ROUTER = 'TEGG::KOA_ROUTER';
 export const KOA_CONTEXT = 'TEGG::KOA_CONTEXT';
+export const KOA_REQUEST = 'TEGG::REQUEST';
+export const KOA_RESPONSE = 'TEGG::RESPONSE';
 
 export const TEGG_CONTEXT = 'TEGG::CONTEXT';
 export const TEGG_OUTPUT = 'TEGG::OUTPUT';
 export const TEGG_ROUTER = 'TEGG::ROUTER';
 
-export const REQUEST = 'TEGG::REQUEST';
-export const RESPONSE = 'TEGG::RESPONSE';
 export const PARAMS = 'TEGG::PARAMS';
 export const QUERY = 'TEGG::QUERY';
 export const BODY = 'TEGG::BODY';

@@ -1,11 +1,11 @@
 import { Inject } from '@artus/core';
 import {
-  HttpController, HttpMethod, HTTPMethodEnum, Request, REQUEST,
+  HttpController, HttpMethod, HTTPMethodEnum, Request,
 } from '../../../../../src';
 
 @HttpController()
 export default class PathController {
-  @Inject(REQUEST)
+  @Inject()
   private req: Request;
 
   @HttpMethod({

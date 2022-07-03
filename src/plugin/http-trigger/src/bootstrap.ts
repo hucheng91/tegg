@@ -8,11 +8,12 @@ import {
 import { Container } from '@artus/injection';
 import {
   ORIGIN_SERVER, KOA_APPLICATION, KOA_ROUTER, KOA_CONTEXT, TEGG_CONTEXT,
-  REQUEST, RESPONSE,
+  KOA_REQUEST, KOA_RESPONSE,
 } from './constant';
 import { registerMiddleware, registerController, controllerMap } from './utils/index';
 import HttpTrigger from './trigger';
 import KoaRouter from './thridparty/router';
+import { Request } from './injectable';
 
 @LifecycleHookUnit()
 export default class BootStrap implements ApplicationLifecycle {
@@ -45,8 +46,9 @@ export default class BootStrap implements ApplicationLifecycle {
       // set execution container
       ctx.container.set({ id: TEGG_CONTEXT, value: ctx });
       ctx.container.set({ id: KOA_CONTEXT, value: koaCtx });
-      ctx.container.set({ id: REQUEST, value: koaCtx.request });
-      ctx.container.set({ id: RESPONSE, value: koaCtx.response });
+      ctx.container.set({ id: KOA_REQUEST, value: koaCtx.request });
+      ctx.container.set({ id: KOA_RESPONSE, value: koaCtx.response });
+      ctx.container.set({ id: Request, value: koaCtx.request });
 
       await next();
     });

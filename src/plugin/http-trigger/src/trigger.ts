@@ -17,9 +17,11 @@ export default class HttpTrigger extends Trigger {
   async respond(ctx: Context) {
     const response: any = ctx.container.get(TEGG_OUTPUT);
     const koaCtx = ctx.container.get<DefaultContext>(KOA_CONTEXT);
-    if (response.status && response.body) {
-      koaCtx.status = response.status;
+    if (response.body) {
       koaCtx.body = response.body;
+      koaCtx.status = response.status || koaCtx.status;
+      response.headers && Object.entries(response.headers).forEach(([ key, value ]) => koaCtx.set(key, value));
+      return;
     }
     koaCtx.body = response;
   }
