@@ -16,7 +16,7 @@ export default class RedisInitialization implements ApplicationLifecycle {
   }
 
   @LifecycleHook()
-  async configDidLoad() {
+  async didLoad() {
     const config = this.app.config.redis;
     const client: RedisOptions = config.client;
     const clients: Record<string, RedisOptions> = config.clients;

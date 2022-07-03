@@ -1,6 +1,7 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
+    "outDir": "./lib",
     "target": "es2019",
     "module": "commonjs",
     "strict": true,

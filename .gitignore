@@ -39,3 +39,5 @@ plugin/dal/test/fixtures/modules/*/dal/
 !core/eventbus-decorator/src/type.d.ts
 !plugin/orm/test/fixtures/prepare.js
 *.rdb
+
+lib

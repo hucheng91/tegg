@@ -1,14 +1,21 @@
 {
   "name": "tegg",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "eggjs with typescript",
-  "main": "dispatch.ts",
+  "main": "lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    }
+  },
   "scripts": {
     "lint:fix": "eslint . --ext .ts --fix",
     "lint": "eslint . --ext .ts",
     "test": "jest --detectOpenHandles",
     "cov": "npm run clean && nyc npm run test",
-    "tsc": "npm run tsc"
+    "build": "tsc -p ./tsconfig.build.json && node scripts/copy.js"
   },
   "repository": {
     "type": "git",
