@@ -1,6 +1,6 @@
 {
   "name": "tegg",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "eggjs with typescript",
   "main": "lib/index.js",
   "types": "./lib/index.d.ts",
@@ -15,7 +15,8 @@
     "lint": "eslint . --ext .ts",
     "test": "jest --detectOpenHandles",
     "cov": "npm run clean && nyc npm run test",
-    "build": "tsc -p ./tsconfig.build.json && node scripts/copy.js"
+    "build": "tsc -p ./tsconfig.build.json && node scripts/copy.js",
+    "pub": "npm run build && npm pub"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,9 @@
   "keywords": [
     "eggjs"
   ],
+  "files": [
+    "lib"
+  ],
   "author": "yeekwanvong@gmail.com",
   "license": "MIT",
   "bugs": {
@@ -31,8 +35,9 @@
   },
   "homepage": "https://github.com/eggjs/tegg#readme",
   "dependencies": {
-    "@artus/core": "^1.0.0-beta.0",
+    "@artus/core": "^1.0.0-beta.9",
     "@koa/router": "^10.1.1",
+    "detect-port": "^1.3.0",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0"
   },
@@ -42,7 +47,6 @@
     "@types/koa__router": "^8.0.11",
     "@types/node": "^18.0.0",
     "axios": "^0.27.2",
-    "detect-port": "^1.3.0",
     "eslint": "^8.17.0",
     "eslint-config-egg": "^12.0.0",
     "ioredis": "^5.1.0",
