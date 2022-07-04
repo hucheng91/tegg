@@ -65,6 +65,12 @@ export default class BootStrap implements ApplicationLifecycle {
     registerController(this.app.trigger as unknown as HttpTrigger, this.container);
     this.koaApp.use(this.koaRouter.routes());
     this.koaApp.use(this.koaRouter.allowedMethods());
+
+    // start artus pipeline in last koa middleware
+    this.koaApp.use(async (koaCtx: DefaultContext) => {
+      const { teggCtx } = koaCtx;
+      await this.app.trigger.startPipeline(teggCtx);
+    });
   }
 
   @LifecycleHook()

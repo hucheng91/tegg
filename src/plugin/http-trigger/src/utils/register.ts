@@ -40,11 +40,11 @@ export function registerController(trigger: HttpTrigger, container: Container) {
       key = key.replace(HOOK_HTTP_META_PREFIX, '');
 
       // register koa controller
-      const koaMiddleware = async function(koaCtx: DefaultContext) {
+      const koaMiddleware = async function(koaCtx: DefaultContext, next) {
         const { teggCtx } = koaCtx;
         const router: TeggRouter = { attr: key, clazz };
         teggCtx.container.set({ id: TEGG_ROUTER, value: router });
-        await trigger.startPipeline(teggCtx);
+        await next();
       };
       if (prefix) {
         childRouter[method.toLowerCase()](path, koaMiddleware);
@@ -60,19 +60,25 @@ export function registerController(trigger: HttpTrigger, container: Container) {
 
   const teggMiddleware = async function(ctx: Context, next: Next) {
     registerParams(ctx.container);
-    const { attr, clazz } = ctx.container.get<TeggRouter>(TEGG_ROUTER);
-    const instance = ctx.container.get<Constructable>(clazz);
+    try {
+      const { attr, clazz } = ctx.container.get<TeggRouter>(TEGG_ROUTER);
+      const instance = ctx.container.get<Constructable>(clazz);
 
-    const koaCtx = ctx.container.get<DefaultContext>(KOA_CONTEXT);
-    const inject = {
-      [PARAMS]: koaCtx.params,
-      [QUERY]: koaCtx.query,
-      [BODY]: koaCtx.request.body,
-    };
-    const params = Reflect.getMetadata(`${HOOK_CONTROLLER_PARAMS_PREFIX}${attr}`, clazz) ?? [];
-    const args = params.map((key: string) => inject[key]);
-    const output = await instance[attr](...args);
-    ctx.container.set({ id: TEGG_OUTPUT, value: output ?? null });
+      const koaCtx = ctx.container.get<DefaultContext>(KOA_CONTEXT);
+      const inject = {
+        [PARAMS]: koaCtx.params,
+        [QUERY]: koaCtx.query,
+        [BODY]: koaCtx.request.body,
+      };
+      const params = Reflect.getMetadata(`${HOOK_CONTROLLER_PARAMS_PREFIX}${attr}`, clazz) ?? [];
+      const args = params.map((key: string) => inject[key]);
+      const output = await instance[attr](...args);
+      ctx.container.set({ id: TEGG_OUTPUT, value: output ?? null });
+    } catch (err) {
+      if (err.name !== 'NotFoundError') {
+        throw err;
+      }
+    }
     await next();
   };
   trigger.use(teggMiddleware);
@@ -113,8 +119,8 @@ export function registerMiddleware(trigger: HttpTrigger, container: Container) {
 export function registerParams(container: Container) {
   const koaCtx = container.get<DefaultContext>(KOA_CONTEXT);
 
-  container.set({ id: QUERY, value: koaCtx.query });
-  container.set({ id: PARAMS, value: koaCtx.params });
-  container.set({ id: BODY, value: koaCtx.request.body });
+  container.set({ id: QUERY, value: koaCtx.query ?? {} });
+  container.set({ id: PARAMS, value: koaCtx.params ?? {} });
+  container.set({ id: BODY, value: koaCtx.request.body ?? {} });
 }
 

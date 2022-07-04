@@ -10,7 +10,14 @@ export default class HttpTrigger extends Trigger {
     // first of all
     this.use(async (ctx: Context, next: Next) => {
       await next();
-      await this.respond(ctx);
+
+      try {
+        await this.respond(ctx);
+      } catch (err) {
+        if (err.name !== 'NotFoundError') {
+          throw err;
+        }
+      }
     });
   }
 
