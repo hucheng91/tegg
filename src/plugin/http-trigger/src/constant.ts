@@ -19,6 +19,7 @@ export const KOA_RESPONSE = 'TEGG::RESPONSE';
 export const TEGG_CONTEXT = 'TEGG::CONTEXT';
 export const TEGG_OUTPUT = 'TEGG::OUTPUT';
 export const TEGG_ROUTER = 'TEGG::ROUTER';
+export const TEGG_CONFIG = 'TEGG::CONFIG';
 
 export const PARAMS = 'TEGG::PARAMS';
 export const QUERY = 'TEGG::QUERY';

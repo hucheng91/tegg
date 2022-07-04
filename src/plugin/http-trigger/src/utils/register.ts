@@ -2,13 +2,12 @@ import { Container, Constructable } from '@artus/injection';
 import { Context, Next } from '@artus/pipeline';
 import { ControllerMeta, MiddlewareMeta } from '../type';
 import HttpTrigger from '../trigger';
-import { DefaultContext } from '../thridparty/index';
+import { DefaultContext, KoaRouter } from '../thridparty/index';
 import {
   KOA_ROUTER, HOOK_HTTP_META_PREFIX, TEGG_OUTPUT, TEGG_ROUTER,
   KOA_CONTEXT, PARAMS, QUERY, BODY, HOOK_CONTROLLER_PARAMS_PREFIX,
   HOOK_MIDDLEWARE_META_PREFIX,
 } from '../constant';
-import KoaRouter from '../thridparty/router';
 
 type TeggRouter = {
   clazz: Constructable,
@@ -20,9 +19,10 @@ export const controllerMap = new Set<ControllerMeta>();
 export const middlewareMap = new Set<MiddlewareMeta>();
 
 export function registerController(trigger: HttpTrigger, container: Container) {
+  const router = container.get<KoaRouter>(KOA_ROUTER);
+
   for (const controller of controllerMap) {
     const { prefix, clazz } = controller;
-    const router = container.get<KoaRouter>(KOA_ROUTER);
 
     const fnMetaKeys = Reflect.getMetadataKeys(clazz);
     const childRouter = router.instance();
@@ -72,7 +72,7 @@ export function registerController(trigger: HttpTrigger, container: Container) {
     const params = Reflect.getMetadata(`${HOOK_CONTROLLER_PARAMS_PREFIX}${attr}`, clazz) ?? [];
     const args = params.map((key: string) => inject[key]);
     const output = await instance[attr](...args);
-    ctx.container.set({ id: TEGG_OUTPUT, value: output });
+    ctx.container.set({ id: TEGG_OUTPUT, value: output ?? null });
     await next();
   };
   trigger.use(teggMiddleware);

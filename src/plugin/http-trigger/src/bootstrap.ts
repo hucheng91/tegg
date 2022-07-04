@@ -8,12 +8,12 @@ import {
 import { Container } from '@artus/injection';
 import {
   ORIGIN_SERVER, KOA_APPLICATION, KOA_ROUTER, KOA_CONTEXT, TEGG_CONTEXT,
-  KOA_REQUEST, KOA_RESPONSE,
+  KOA_REQUEST, KOA_RESPONSE, TEGG_CONFIG,
 } from './constant';
 import { registerMiddleware, registerController, controllerMap } from './utils/index';
 import HttpTrigger from './trigger';
 import KoaRouter from './thridparty/router';
-import { Request } from './injectable';
+import { Request, Response } from './injectable';
 
 @LifecycleHookUnit()
 export default class BootStrap implements ApplicationLifecycle {
@@ -38,6 +38,7 @@ export default class BootStrap implements ApplicationLifecycle {
   async initKoa() {
     this.container.set({ id: KOA_APPLICATION, value: this.koaApp });
     this.container.set({ id: KOA_ROUTER, value: this.koaRouter });
+    this.container.set({ id: TEGG_CONFIG, value: this.app.config });
 
     this.koaApp.use(async (koaCtx: DefaultContext, next) => {
       const ctx = await this.app.trigger.initContext();
@@ -49,6 +50,7 @@ export default class BootStrap implements ApplicationLifecycle {
       ctx.container.set({ id: KOA_REQUEST, value: koaCtx.request });
       ctx.container.set({ id: KOA_RESPONSE, value: koaCtx.response });
       ctx.container.set({ id: Request, value: koaCtx.request });
+      ctx.container.set({ id: Response, value: koaCtx.response });
 
       await next();
     });
