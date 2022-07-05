@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/eggjs/tegg#readme",
   "dependencies": {
-    "@artus/core": "^1.0.0-beta.9",
+    "@artus/core": "^1.0.0-beta.10",
     "@koa/router": "^10.1.1",
     "detect-port": "^1.3.0",
     "koa": "^2.13.4",
