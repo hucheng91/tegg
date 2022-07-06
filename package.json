@@ -1,6 +1,6 @@
 {
   "name": "tegg",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "eggjs with typescript",
   "main": "lib/index.js",
   "types": "./lib/index.d.ts",
